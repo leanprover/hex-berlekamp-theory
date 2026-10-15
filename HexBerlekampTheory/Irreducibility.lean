@@ -9,9 +9,9 @@ module
 public import HexBerlekamp.Factor
 public import HexBerlekamp.Irreducibility
 public import HexBerlekamp.RabinSoundness
-public import HexModArithMathlib
-public import HexPolyMathlib
-public import HexPolyFpMathlib
+public import HexModArithTheory
+public import HexPolyTheory
+public import HexPolyFpTheory
 public import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.FieldTheory.Finite.GaloisField
 
@@ -25,7 +25,7 @@ This module transfers executable `FpPoly p` values to Mathlib polynomials over
 theorems used by downstream finite-field factorization proofs.
 -/
 
-namespace HexBerlekampMathlib
+namespace HexBerlekampTheory
 
 universe u
 
@@ -33,9 +33,9 @@ noncomputable section
 
 open Polynomial
 
--- The transport layer lives in `HexPolyFpMathlib`. Re-exported here so call
--- sites spelling these `HexBerlekampMathlib.foo` keep resolving.
-export HexPolyFpMathlib (fpPolyToPolynomial polynomialToFpPoly
+-- The transport layer lives in `HexPolyFpTheory`. Re-exported here so call
+-- sites spelling these `HexBerlekampTheory.foo` keep resolving.
+export HexPolyFpTheory (fpPolyToPolynomial polynomialToFpPoly
   coeff_fpPolyToPolynomial fpPolyEquiv toMathlibPolynomial fpPolyEquiv_apply
   fpPolyEquiv_symm_apply coeff_toMathlibPolynomial coeff_polynomialToFpPoly
   natDegree_toMathlibPolynomial leadingCoeff_toMathlibPolynomial
@@ -89,14 +89,14 @@ theorem isUnit_toMathlibPolynomial_of_isUnitPolynomial
     have hlast := Hex.DensePoly.coeff_last_ne_zero_of_pos_size g (by omega : 0 < g.size)
     have key : g.coeff 0 ≠ Zero.zero := by simpa [hsize] using hlast
     exact key
-  have htoZ_ne : HexModArithMathlib.ZMod64.toZMod (g.coeff 0) ≠ 0 := by
+  have htoZ_ne : HexModArithTheory.ZMod64.toZMod (g.coeff 0) ≠ 0 := by
     intro hzero
     apply hne
-    apply HexModArithMathlib.ZMod64.equiv.injective
-    rw [HexModArithMathlib.ZMod64.equiv_apply, HexModArithMathlib.ZMod64.equiv_apply,
-      HexModArithMathlib.ZMod64.toZMod_zero, hzero]
+    apply HexModArithTheory.ZMod64.equiv.injective
+    rw [HexModArithTheory.ZMod64.equiv_apply, HexModArithTheory.ZMod64.equiv_apply,
+      HexModArithTheory.ZMod64.toZMod_zero, hzero]
   have hC_eq : toMathlibPolynomial g =
-      Polynomial.C (HexModArithMathlib.ZMod64.toZMod (g.coeff 0)) := by
+      Polynomial.C (HexModArithTheory.ZMod64.toZMod (g.coeff 0)) := by
     conv_lhs => rw [hgC]
     exact toMathlibPolynomial_C (g.coeff 0)
   rw [hC_eq]
@@ -361,9 +361,9 @@ theorem rabinTest_true_of_mathlib_checks
         show (1 : Hex.FpPoly p) = Hex.DensePoly.C (1 : Hex.ZMod64 p) from rfl,
         Hex.DensePoly.coeff_C, Polynomial.coeff_one]
       by_cases hm : m = 0
-      · simp [hm, HexModArithMathlib.ZMod64.toZMod_one]
+      · simp [hm, HexModArithTheory.ZMod64.toZMod_one]
       · rw [ite_eq_right hm, ite_eq_right hm]
-        exact HexModArithMathlib.ZMod64.toZMod_zero
+        exact HexModArithTheory.ZMod64.toZMod_zero
     have hg_dvd_one :
         Hex.DensePoly.gcd f (Hex.Berlekamp.frobeniusDiffMod f hmonic d) ∣ (1 : Hex.FpPoly p) := by
       apply toMathlibPolynomial_dvd_iff.mp
@@ -451,16 +451,16 @@ theorem toMathlibPolynomial_squareFree_coprime
     have key : g.coeff 0 ≠ Zero.zero := by simpa [hg_size] using hlast
     exact key
   have hg_coeff_zmod_ne :
-      HexModArithMathlib.ZMod64.toZMod (g.coeff 0) ≠ 0 := by
+      HexModArithTheory.ZMod64.toZMod (g.coeff 0) ≠ 0 := by
     intro hzero
     apply hg_coeff_ne
-    have hinj := (HexModArithMathlib.ZMod64.equiv (p := p)).injective
+    have hinj := (HexModArithTheory.ZMod64.equiv (p := p)).injective
     apply hinj
-    simpa using hzero.trans HexModArithMathlib.ZMod64.toZMod_zero.symm
+    simpa using hzero.trans HexModArithTheory.ZMod64.toZMod_zero.symm
   have hg_poly_unit : IsUnit (toMathlibPolynomial g) := by
     have hg_poly_eq :
         toMathlibPolynomial g =
-          Polynomial.C (HexModArithMathlib.ZMod64.toZMod (g.coeff 0)) := by
+          Polynomial.C (HexModArithTheory.ZMod64.toZMod (g.coeff 0)) := by
       ext n
       cases n with
       | zero =>
@@ -469,7 +469,7 @@ theorem toMathlibPolynomial_squareFree_coprime
           rw [coeff_toMathlibPolynomial,
             Hex.DensePoly.coeff_eq_zero_of_size_le g (by omega)]
           rw [Polynomial.coeff_C]
-          exact HexModArithMathlib.ZMod64.toZMod_zero (p := p)
+          exact HexModArithTheory.ZMod64.toZMod_zero (p := p)
     rw [hg_poly_eq]
     exact Polynomial.isUnit_C.mpr (isUnit_iff_ne_zero.mpr hg_coeff_zmod_ne)
   have hmath_gcd_unit :
@@ -497,9 +497,9 @@ theorem natDegree_toMathlibPolynomial_pos_of_degree?_pos
     rw [coeff_toMathlibPolynomial]
     intro hzero
     apply hcoeff_ne
-    have hinj := (HexModArithMathlib.ZMod64.equiv (p := p)).injective
+    have hinj := (HexModArithTheory.ZMod64.equiv (p := p)).injective
     apply hinj
-    simpa using hzero.trans HexModArithMathlib.ZMod64.toZMod_zero.symm
+    simpa using hzero.trans HexModArithTheory.ZMod64.toZMod_zero.symm
   have hlb : g.size - 1 ≤ (toMathlibPolynomial g).natDegree :=
     Polynomial.le_natDegree_of_ne_zero hcoeff_zmod_ne
   omega
@@ -752,7 +752,7 @@ theorem fpIsIrreducible_iff [Fact (Nat.Prime p)] (f : Hex.FpPoly p) :
       apply Polynomial.ext
       intro n
       rw [coeff_toMathlibPolynomial, hf0, Hex.DensePoly.coeff_zero, Polynomial.coeff_zero]
-      exact HexModArithMathlib.ZMod64.toZMod_zero
+      exact HexModArithTheory.ZMod64.toZMod_zero
     rw [fpIsIrreducible, ite_eq_left hz, hpoly0]
     simp only [Bool.false_eq_true, false_iff]
     exact not_irreducible_zero
@@ -781,16 +781,16 @@ theorem fpIsIrreducible_iff [Fact (Nat.Prime p)] (f : Hex.FpPoly p) :
         (Hex.Berlekamp.basisSize (Hex.FpPoly.normalizeMonic f).2) rfl]
     -- `toMathlibPolynomial m = C (toZMod c⁻¹) * toMathlibPolynomial f`.
     have hbridge : toMathlibPolynomial (Hex.FpPoly.normalizeMonic f).2
-        = Polynomial.C (HexModArithMathlib.ZMod64.toZMod c⁻¹) * toMathlibPolynomial f := by
+        = Polynomial.C (HexModArithTheory.ZMod64.toZMod c⁻¹) * toMathlibPolynomial f := by
       rw [hnm2, ← Hex.FpPoly.C_mul_eq_scale, toMathlibPolynomial_mul, toMathlibPolynomial_C]
     rw [hbridge]
-    have htoinv_ne : HexModArithMathlib.ZMod64.toZMod c⁻¹ ≠ 0 := by
+    have htoinv_ne : HexModArithTheory.ZMod64.toZMod c⁻¹ ≠ 0 := by
       intro h0
       apply hinv_ne
-      have hround := congrArg HexModArithMathlib.ZMod64.ofZMod h0
-      rwa [HexModArithMathlib.ZMod64.ofZMod_toZMod, HexModArithMathlib.ZMod64.ofZMod_zero]
+      have hround := congrArg HexModArithTheory.ZMod64.ofZMod h0
+      rwa [HexModArithTheory.ZMod64.ofZMod_toZMod, HexModArithTheory.ZMod64.ofZMod_zero]
         at hround
-    have hunit : IsUnit (Polynomial.C (HexModArithMathlib.ZMod64.toZMod c⁻¹)) :=
+    have hunit : IsUnit (Polynomial.C (HexModArithTheory.ZMod64.toZMod c⁻¹)) :=
       Polynomial.isUnit_C.mpr (isUnit_iff_ne_zero.mpr htoinv_ne)
     exact irreducible_isUnit_mul hunit
 
@@ -817,4 +817,4 @@ example :
 
 end Computable
 
-end HexBerlekampMathlib
+end HexBerlekampTheory

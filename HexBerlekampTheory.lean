@@ -6,14 +6,14 @@ Authors: Kim Morrison
 
 module
 
-public import HexBerlekampMathlib.Irreducibility
-public import HexBerlekampMathlib.FactorPoly
-public import HexBerlekampMathlib.FactorTactic
+public import HexBerlekampTheory.Irreducibility
+public import HexBerlekampTheory.FactorPoly
+public import HexBerlekampTheory.FactorTactic
 
 public section
 
 /-!
-The `HexBerlekampMathlib` library contains the Mathlib-facing correctness
+The `HexBerlekampTheory` library contains the Mathlib-facing correctness
 surface for executable Berlekamp factorization and Rabin irreducibility tests.
 
 It exposes the transfer from `FpPoly p` to `Polynomial (ZMod p)`, the first

@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexBerlekampMathlib.Irreducibility
+public import HexBerlekampTheory.Irreducibility
 public import HexBerlekamp.IrreducibleDecide
 
 public section
@@ -43,7 +43,7 @@ structure FactoredPoly {R : Type*} [CommRing R] (P : Polynomial R) where
 
 end Hex
 
-namespace HexBerlekampMathlib
+namespace HexBerlekampTheory
 
 variable {p : Nat} [Hex.ZMod64.Bounds p]
 
@@ -59,11 +59,11 @@ theorem toMathlibPolynomial_listProd (l : List (Hex.FpPoly p)) :
   | cons a t ih =>
       rw [List.prod_cons, List.map_cons, List.prod_cons, toMathlibPolynomial_mul, ih]
 
-end HexBerlekampMathlib
+end HexBerlekampTheory
 
 namespace Hex
 
-open HexBerlekampMathlib
+open HexBerlekampTheory
 
 /-- One-shot assembler for the `factor_poly` extension on `Polynomial (ZMod p)`:
 every certification slot is a Boolean check on reified literal data (filled by
@@ -79,10 +79,10 @@ noncomputable def FactoredPoly.ofFp {p : Nat} [inst : Hex.ZMod64.Bounds p]
     (hdeg : factors.all (fun g => decide (0 < g.natDegree)) = true)
     (hcheck : Hex.Berlekamp.checkIrredCover factors certified = true)
     (hP : toMathlibPolynomial f = P) : Hex.FactoredPoly P where
-  scalar := HexModArithMathlib.ZMod64.toZMod s
+  scalar := HexModArithTheory.ZMod64.toZMod s
   factors := factors.map toMathlibPolynomial
   factors_mul := by
-    calc Polynomial.C (HexModArithMathlib.ZMod64.toZMod s) *
+    calc Polynomial.C (HexModArithTheory.ZMod64.toZMod s) *
           (factors.map toMathlibPolynomial).prod
         = toMathlibPolynomial (Hex.DensePoly.C s) * toMathlibPolynomial factors.prod := by
           rw [toMathlibPolynomial_C, toMathlibPolynomial_listProd]
@@ -102,7 +102,7 @@ noncomputable def FactoredPoly.ofFp {p : Nat} [inst : Hex.ZMod64.Bounds p]
 
 end Hex
 
-namespace HexBerlekampMathlib
+namespace HexBerlekampTheory
 
 /-- Kernel-decidable irreducibility endpoint for the `irreducibility` extension
 on `Polynomial (ZMod p)`: the executable side is
@@ -124,4 +124,4 @@ theorem irreducible_ofFp {p : Nat} [Hex.ZMod64.Bounds p]
     (natDegree_toMathlibPolynomial_pos_of_degree?_pos (of_decide_eq_true hdeg)) hf
   rwa [hP] at h
 
-end HexBerlekampMathlib
+end HexBerlekampTheory

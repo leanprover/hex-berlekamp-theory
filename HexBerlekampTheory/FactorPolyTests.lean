@@ -10,15 +10,15 @@ module
 -- elaboration-time evaluation): the emitted kernel checks must reduce through
 -- the exposed closure alone.
 public meta import HexBerlekamp.IrreducibilityElab
-public meta import HexBerlekampMathlib.FactorTactic
+public meta import HexBerlekampTheory.FactorTactic
 public import HexBerlekamp.IrreducibilityElab
-public import HexBerlekampMathlib.FactorTactic
+public import HexBerlekampTheory.FactorTactic
 
 public section
 
 open Polynomial
 
-namespace HexBerlekampMathlib.FactorPolyTests
+namespace HexBerlekampTheory.FactorPolyTests
 
 /-! # `factor_poly` on `Polynomial (ZMod 5)` -/
 
@@ -130,16 +130,16 @@ irreducibility: Polynomial (ZMod q) inputs need a prime modulus, but 6 is not pr
 
 /-! # Axiom hygiene -/
 
-/-- info: 'HexBerlekampMathlib.FactorPolyTests.facP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'HexBerlekampTheory.FactorPolyTests.facP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms facP
 
-/-- info: 'HexBerlekampMathlib.FactorPolyTests.facNeg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'HexBerlekampTheory.FactorPolyTests.facNeg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms facNeg
 
-/-- info: 'HexBerlekampMathlib.FactorPolyTests.quad_irred' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'HexBerlekampTheory.FactorPolyTests.quad_irred' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms quad_irred
 
-end HexBerlekampMathlib.FactorPolyTests
+end HexBerlekampTheory.FactorPolyTests

@@ -1,4 +1,4 @@
-# hex-berlekamp-mathlib (depends on hex-berlekamp + hex-poly-mathlib + hex-mod-arith-mathlib + Mathlib)
+# hex-berlekamp-theory (depends on hex-berlekamp + hex-poly-theory + hex-mod-arith-theory + Mathlib)
 
 Proves the full correctness of Berlekamp's algorithm and Rabin's test
 by transferring to `Polynomial (ZMod p)` and using Mathlib's Euclidean
@@ -22,8 +22,8 @@ construct a nonconstant Berlekamp kernel element, which means the
 algorithm would have split `g` further.
 
 The proof works through the ring equivalence
-`FpPoly p ≃+* Polynomial (ZMod p)` (from hex-poly-mathlib +
-hex-mod-arith-mathlib). Steps 1-3 use Euclidean domain theory
+`FpPoly p ≃+* Polynomial (ZMod p)` (from hex-poly-theory +
+hex-mod-arith-theory). Steps 1-3 use Euclidean domain theory
 that Mathlib provides for `Polynomial (ZMod p)`:
 
 - `Polynomial.dvd_iff_isRoot` (factor theorem)
@@ -189,8 +189,8 @@ assembled from (1)+(4)):
 
 ## The `Polynomial (ZMod q)` extension for `factor_poly` / `irreducibility`
 
-`HexBerlekampMathlib/FactorTactic.lean` declares
-`HexBerlekampMathlib.FactorTactic.extension`. The tactic driver finds it
+`HexBerlekampTheory/FactorTactic.lean` declares
+`HexBerlekampTheory.FactorTactic.extension`. The tactic driver finds it
 through `Hex.FactorTactic.extensionNames`, and registration tests ensure that
 the declaration remains discoverable. It extends
 the `factor_poly`/`irreducibility` elaborators to `Polynomial (ZMod q)`
@@ -210,18 +210,18 @@ emission).
 The factor search reuses the `FpPoly` factorization
 (`Hex.FactorTactic.fpFactorSearch` / `fpCoverEntries`) as untrusted
 search. Emitted terms apply the kernel-decidable assemblers in
-`HexBerlekampMathlib/FactorPoly.lean`: `Hex.FactoredPoly.ofFp` (result
+`HexBerlekampTheory/FactorPoly.lean`: `Hex.FactoredPoly.ofFp` (result
 type `Hex.FactoredPoly P`, the `Polynomial`-level counterpart of
-`FpPoly.Factored`) and `HexBerlekampMathlib.irreducible_ofFp`, whose
+`FpPoly.Factored`) and `HexBerlekampTheory.irreducible_ofFp`, whose
 certification slots are all Boolean checks on reified literals discharged
 by `Eq.refl true`/`Eq.refl false`; the factorizer and certificate
 generator never appear in emitted terms.
 
 ## Proof examples
 
-Representative example files under `bench/HexBerlekampMathlib/ProofProbe`
+Representative example files under `bench/HexBerlekampTheory/ProofProbe`
 exercise factorization, irreducibility and repeated factors. CI builds them
-through `HexBerlekampMathlibProofProbe` on every PR. These examples and the
+through `HexBerlekampTheoryProofProbe` on every PR. These examples and the
 ordinary library/conformance tests establish correctness; this proof surface has
 no paired timing decision, timing ladder, absolute build-time gate, profile or
 headline-report requirement. The computational owner's LeanBench obligations

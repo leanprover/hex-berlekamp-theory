@@ -1,5 +1,5 @@
-name = "hex-berlekamp-mathlib"
-defaultTargets = ["HexBerlekampMathlib"]
+name = "hex-berlekamp-theory"
+defaultTargets = ["HexBerlekampTheory"]
 
 leanOptions = [
   { name = "doc.verso", value = true },
@@ -7,24 +7,24 @@ leanOptions = [
 ]
 
 [[require]]
-name = "HexPolyMathlib"
-git = "https://github.com/leanprover/hex-poly-mathlib.git"
-rev = "v0.9.0"
+name = "HexPolyTheory"
+git = "https://github.com/leanprover/hex-poly-theory.git"
+rev = "v0.10.0"
 
 [[require]]
-name = "HexModArithMathlib"
-git = "https://github.com/leanprover/hex-mod-arith-mathlib.git"
-rev = "v0.9.0"
+name = "HexModArithTheory"
+git = "https://github.com/leanprover/hex-mod-arith-theory.git"
+rev = "v0.10.0"
 
 [[require]]
-name = "HexPolyFpMathlib"
-git = "https://github.com/leanprover/hex-poly-fp-mathlib.git"
-rev = "v0.9.0"
+name = "HexPolyFpTheory"
+git = "https://github.com/leanprover/hex-poly-fp-theory.git"
+rev = "v0.10.0"
 
 [[require]]
 name = "HexBerlekamp"
 git = "https://github.com/leanprover/hex-berlekamp.git"
-rev = "v0.9.0"
+rev = "v0.10.0"
 
 [[require]]
 name = "mathlib"
@@ -32,8 +32,8 @@ git = "https://github.com/leanprover-community/mathlib4.git"
 rev = "6b7abb3c7686292736be2955bd3eb9ebf63b456a"
 
 [[lean_lib]]
-name = "HexBerlekampMathlib"
+name = "HexBerlekampTheory"
 
 [[lean_lib]]
-name = "HexBerlekampMathlibTests"
-globs = ["HexBerlekampMathlib.FactorPolyTests"]
+name = "HexBerlekampTheoryTests"
+globs = ["HexBerlekampTheory.FactorPolyTests"]

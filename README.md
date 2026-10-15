@@ -1,4 +1,4 @@
-# hex-berlekamp-mathlib
+# hex-berlekamp-theory
 
 Part of [`hex`](https://github.com/kim-em/hex-dev), a computer algebra
 library for Lean 4. The aim is fast executable code, fully verified, built
@@ -15,13 +15,13 @@ factorization tactics for Mathlib polynomials.
 
 ```toml
 [[require]]
-name = "hex-berlekamp-mathlib"
-git = "https://github.com/leanprover/hex-berlekamp-mathlib.git"
+name = "hex-berlekamp-theory"
+git = "https://github.com/leanprover/hex-berlekamp-theory.git"
 rev = "main"
 ```
 
 ```lean
-import HexBerlekampMathlib
+import HexBerlekampTheory
 ```
 
 # Functionality
@@ -33,7 +33,7 @@ soundness, factorization transport, and the Mathlib `factor_poly` extension.
 
 The public umbrella excludes regression tests; those are compiled by the
 release test target. The computational algorithms stay in the Mathlib-free
-package. See the [SPEC](SPEC/hex-berlekamp-mathlib.md) for the correspondence
+package. See the [SPEC](SPEC/hex-berlekamp-theory.md) for the correspondence
 theorems and trust boundary.
 
 # Contributing

@@ -7,9 +7,9 @@ Authors: Kim Morrison
 module
 
 public meta import HexBerlekamp.FactorPolyElab
-public meta import HexBerlekampMathlib.FactorPoly
+public meta import HexBerlekampTheory.FactorPoly
 public import HexBerlekamp.FactorPolyElab
-public import HexBerlekampMathlib.FactorPoly
+public import HexBerlekampTheory.FactorPoly
 
 public section
 
@@ -26,12 +26,12 @@ value equals the node, combining child proofs through the named
 `toMathlibPolynomial_*` transport lemmas. The compiled Berlekamp factorizer
 then runs as untrusted search exactly as in the `FpPoly` computation, and the
 emitted terms apply the kernel-decidable assemblers `Hex.FactoredPoly.ofFp` /
-`HexBerlekampMathlib.irreducible_ofFp` to reified literal data: every
+`HexBerlekampTheory.irreducible_ofFp` to reified literal data: every
 certification slot is discharged by `Eq.refl true`/`Eq.refl false`, plus the
 parser-built translation equality. The factorizer never appears in emitted terms.
 -/
 
-namespace HexBerlekampMathlib.FactorTactic
+namespace HexBerlekampTheory.FactorTactic
 
 open Lean Meta Elab
 open Hex.FactorTactic (ExtensionResult)
@@ -82,7 +82,7 @@ meta def scalarDecideProof (tactic : String) (prop : Expr) : MetaM Expr := do
 
 /-- The partial application `toMathlibPolynomial (p := q)` as an expression. -/
 meta def tomlFn (pE boundsE : Expr) : Expr :=
-  mkApp2 (mkConst ``HexBerlekampMathlib.toMathlibPolynomial) pE boundsE
+  mkApp2 (mkConst ``HexBerlekampTheory.toMathlibPolynomial) pE boundsE
 
 /-- Combine two parsed children through a binary transport lemma: given child
 results `(va, vaE, pa)`/`(vb, vbE, pb)` with `pa : toMathlibPolynomial vaE = a`
@@ -111,10 +111,10 @@ meta def constLeaf {q : Nat} [Hex.ZMod64.Bounds q]
   let v : Hex.FpPoly q := Hex.DensePoly.C (Hex.ZMod64.ofNat q k)
   let zLit := Hex.CertificateSyntax.reifyZMod64 pE boundsE k
   let vE ← mkAppM ``Hex.DensePoly.C #[zLit]
-  let t1 ← mkAppOptM ``HexBerlekampMathlib.toMathlibPolynomial_C
+  let t1 ← mkAppOptM ``HexBerlekampTheory.toMathlibPolynomial_C
     #[some pE, some boundsE, some zLit]
   -- t1 : toMathlibPolynomial (C zLit) = Polynomial.C (toZMod zLit)
-  let toZModE ← mkAppOptM ``HexModArithMathlib.ZMod64.toZMod
+  let toZModE ← mkAppOptM ``HexModArithTheory.ZMod64.toZMod
     #[some pE, some boundsE, some zLit]
   let hc ← scalarDecideProof tactic (← mkEq toZModE cRhsE)
   let some (_, _, rhs) := (← inferType t1).eq?
@@ -144,21 +144,21 @@ meta partial def parsePolynomial (tactic : String) (q : Nat) [Hex.ZMod64.Bounds 
       let (va, vaE, pa) ← parsePolynomial tactic q pE boundsE fuel a
       let (vb, vbE, pb) ← parsePolynomial tactic q pE boundsE fuel b
       combineBinary pE boundsE e (va + vb) vaE vbE pa pb
-        ``HexBerlekampMathlib.toMathlibPolynomial_add ``HAdd.hAdd
+        ``HexBerlekampTheory.toMathlibPolynomial_add ``HAdd.hAdd
   | (``HSub.hSub, #[_, _, _, _, a, b]) => do
       let (va, vaE, pa) ← parsePolynomial tactic q pE boundsE fuel a
       let (vb, vbE, pb) ← parsePolynomial tactic q pE boundsE fuel b
       combineBinary pE boundsE e (va - vb) vaE vbE pa pb
-        ``HexBerlekampMathlib.toMathlibPolynomial_sub ``HSub.hSub
+        ``HexBerlekampTheory.toMathlibPolynomial_sub ``HSub.hSub
   | (``HMul.hMul, #[_, _, _, _, a, b]) => do
       let (va, vaE, pa) ← parsePolynomial tactic q pE boundsE fuel a
       let (vb, vbE, pb) ← parsePolynomial tactic q pE boundsE fuel b
       combineBinary pE boundsE e (va * vb) vaE vbE pa pb
-        ``HexBerlekampMathlib.toMathlibPolynomial_mul ``HMul.hMul
+        ``HexBerlekampTheory.toMathlibPolynomial_mul ``HMul.hMul
   | (``Neg.neg, #[_, _, a]) => do
       let (va, vaE, pa) ← parsePolynomial tactic q pE boundsE fuel a
       let vE ← mkAppM ``Neg.neg #[vaE]
-      let t1 ← mkAppOptM ``HexBerlekampMathlib.toMathlibPolynomial_neg
+      let t1 ← mkAppOptM ``HexBerlekampTheory.toMathlibPolynomial_neg
         #[some pE, some boundsE, some vaE]
       let polyTy ← inferType e
       let negFn ← mkAppOptM ``Neg.neg #[some polyTy, none]
@@ -173,13 +173,13 @@ meta partial def parsePolynomial (tactic : String) (q : Nat) [Hex.ZMod64.Bounds 
       -- `a ^ 0`: value `1`, proof through `toMathlibPolynomial_one` and `pow_zero`.
       let mut v : Hex.FpPoly q := 1
       let mut vE ← mkAppOptM ``One.one #[some fpTy, none]
-      let oneLem ← mkAppOptM ``HexBerlekampMathlib.toMathlibPolynomial_one
+      let oneLem ← mkAppOptM ``HexBerlekampTheory.toMathlibPolynomial_one
         #[some pE, some boundsE]
       let mut prf ← mkEqTrans oneLem (← mkEqSymm (← mkAppM ``pow_zero #[a]))
       -- `a ^ (k+1) = a ^ k * a`, peeled by `pow_succ`.
       for k in [0:n] do
         let vE' ← mkAppM ``HMul.hMul #[vE, vaE]
-        let t1 ← mkAppOptM ``HexBerlekampMathlib.toMathlibPolynomial_mul
+        let t1 ← mkAppOptM ``HexBerlekampTheory.toMathlibPolynomial_mul
           #[some pE, some boundsE, some vE, some vaE]
         let t2 ← mkCongr (← mkCongrArg mulFn prf) pa
         let t3 ← mkEqSymm (← mkAppM ``pow_succ #[a, mkNatLit k])
@@ -189,7 +189,7 @@ meta partial def parsePolynomial (tactic : String) (q : Nat) [Hex.ZMod64.Bounds 
       return (v, vE, prf)
   | (``Polynomial.X, _) => do
       let vE := mkApp2 (mkConst ``Hex.FpPoly.X) pE boundsE
-      let prf ← mkAppOptM ``HexBerlekampMathlib.toMathlibPolynomial_X
+      let prf ← mkAppOptM ``HexBerlekampTheory.toMathlibPolynomial_X
         #[some pE, some boundsE]
       return (Hex.FpPoly.X (p := q), vE, prf)
   | (``Polynomial.C, #[_, _, c]) => do
@@ -279,7 +279,7 @@ meta def elabFactorZMod (tactic : String) (q : Nat) [Hex.ZMod64.Bounds q]
 
 /-- The `irreducibility` arm: parse with proof, build the Rabin certificate as
 untrusted search, self-check, and emit a reified
-`HexBerlekampMathlib.irreducible_ofFp` application. -/
+`HexBerlekampTheory.irreducible_ofFp` application. -/
 meta def elabIrredZMod (tactic : String) (q : Nat) [Hex.ZMod64.Bounds q]
     (hpt : Hex.Nat.isPrimeTrial q = true) (pE e : Expr) :
     Term.TermElabM Expr := do
@@ -311,7 +311,7 @@ meta def elabIrredZMod (tactic : String) (q : Nat) [Hex.ZMod64.Bounds q]
         let mE := Hex.CertificateSyntax.reifyFpPolyOfNats pE boundsE (Hex.CertificateSyntax.fpCoeffNats m)
         let cE := Hex.CertificateSyntax.reifyZMod64 pE boundsE unit.toNat
         let certE := Hex.CertificateSyntax.reifyRabinCert cert
-        return mkAppN (mkConst ``HexBerlekampMathlib.irreducible_ofFp)
+        return mkAppN (mkConst ``HexBerlekampTheory.irreducible_ofFp)
           #[pE, boundsE, e, fLit, mE, cE, certE,
             Hex.CertificateSyntax.reflTrue, Hex.CertificateSyntax.reflFalse, Hex.CertificateSyntax.reflTrue,
             Hex.CertificateSyntax.reflTrue, Hex.CertificateSyntax.reflTrue, hP]
@@ -368,9 +368,9 @@ meta def goalIrredZMod (goal : MVarId) : Tactic.TacticM ExtensionResult := do
             \nis not definitionally equal to the goal{indentExpr tgt}"
       return proof
 
-end HexBerlekampMathlib.FactorTactic
+end HexBerlekampTheory.FactorTactic
 
-namespace HexBerlekampMathlib.FactorTactic
+namespace HexBerlekampTheory.FactorTactic
 
 open Lean Elab
 
@@ -386,4 +386,4 @@ public meta def extension : Hex.FactorTactic.Extension where
       @elabIrredZMod "irreducibility" q inst hpt qE eP
   goalIrred? := goalIrredZMod
 
-end HexBerlekampMathlib.FactorTactic
+end HexBerlekampTheory.FactorTactic
